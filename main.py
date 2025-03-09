@@ -41,7 +41,30 @@ def obtener_curso(curso_id: str):
     #next es un metodo que nos ayuda a buscar un solo curso, en este caso, dentro de una lista
     curso = next((curso for curso in cursos_db if curso.id == curso_id), None) #Con nexto tomamos la primera coincidencia del array devuelto
     if curso is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Curso no encontrado")
+    return curso
+
+#CRUD: Update(actualizar/modificar) PUT: Modificaremos un recurso con el ID que pidamos
+@app.put("/cursos/{curso_id}", response_model=Curso)
+def actualizar_curso(curso_id:str, curso_actualizado:Curso):
+    curso = next((curso for curso in cursos_db if curso.id == curso_id), None):
+    if curso is None:
+        raise HTTPException(status_code=404, detail="Curso no encontrado")
+    curso_actualizado.id = curso_id
+    index = cursos_db.index(curso) #Con esto buscamos el indice exacto donde esta el curso en nuestra lista
+    cursos_db[index] = curso_actualizado
+    return curso_actualizado
+
+#CRUD: Delete (eliminar) DELETE: Eliminaremos un recurso con el ID que pidamos
+
+@app.delete("/cursos/{curso_id}", response_model=Curso)
+def eliminar_curso(curso_id: str):
+
+    curso = next((curso for curso in cursos_db if curso.id == curso_id), None) #Con nexto tomamos la primera coincidencia del array devuelto
+    if curso is None:
+        raise HTTPException(status_code=404, detail="Curso no encontrado")
+    cursos_db.remove(curso)
+    return curso
 
 
 
